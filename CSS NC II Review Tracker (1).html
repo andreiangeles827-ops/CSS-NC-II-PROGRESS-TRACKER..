@@ -1,0 +1,552 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>CSS NC II Review Tracker</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: bench-instrument feel. Top bar with tabs on desktop, bottom tab bar on phones. Hex badges and mono readouts carry the hardware theme. */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --surface2:#e4e9ee; --ink:#13202c; --muted:#566676; --line:#cfd7df;
+  --accent:#1c5bd8; --accent-ink:#ffffff; --accent-soft:#dbe6fb;
+  --amber:#8f5d00; --amber-bg:#fbeccb;
+  --good:#1b7f4b; --good-bg:#d9f1e3; --bad:#c23a2b; --bad-bg:#fbe0dc;
+  --f-display:'Space Grotesk',system-ui,sans-serif; --f-body:'Inter',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1720; --surface:#17222d; --surface2:#1f2d3a; --ink:#e6edf3; --muted:#96a7b7; --line:#2c3b4a;
+  --accent:#6f9cff; --accent-ink:#0b1420; --accent-soft:#1c2f52; --amber:#f0b64a; --amber-bg:#3a2d12;
+  --good:#4cc487; --good-bg:#14352a; --bad:#ff8a7a; --bad-bg:#3d1b17; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1720; --surface:#17222d; --surface2:#1f2d3a; --ink:#e6edf3; --muted:#96a7b7; --line:#2c3b4a;
+  --accent:#6f9cff; --accent-ink:#0b1420; --accent-soft:#1c2f52; --amber:#f0b64a; --amber-bg:#3a2d12;
+  --good:#4cc487; --good-bg:#14352a; --bad:#ff8a7a; --bad-bg:#3d1b17; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 96px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:1.9rem} h2{font-size:1.25rem} h3{font-size:1.05rem}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1040px;margin-inline:auto}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.label{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:16px;padding-block:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:700;font-size:1.05rem;text-decoration:none;color:inherit;background:none;border:0;padding:0}
+.logo{width:34px;height:34px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-family:var(--f-mono);font-weight:700;font-size:.7rem;clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%)}
+.tabs{display:flex;gap:4px;margin-left:auto}
+.tab{background:none;border:0;padding:8px 12px;border-radius:8px;font-weight:500;color:var(--muted);display:flex;gap:8px;align-items:center}
+.tab:hover{background:var(--surface2);color:var(--ink)}
+.tab[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.tab svg,.bn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.iconbtn{background:var(--surface);border:1px solid var(--line);border-radius:8px;width:38px;height:38px;display:grid;place-items:center}
+.iconbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.bottomnav{display:none}
+@media (max-width:760px){
+  .tabs{display:none}
+  .top{justify-content:space-between}
+  .bottomnav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);
+    padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+  .bn{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;font-size:.7rem;font-weight:500;color:var(--muted);border-radius:8px}
+  .bn[aria-current="page"]{color:var(--accent)}
+  h1{font-size:1.6rem}
+}
+
+/* surfaces */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.card>*{min-width:0}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.pagehead{display:flex;flex-direction:column;gap:6px;padding-block:8px 20px}
+.pagehead p{color:var(--muted);max-width:62ch}
+.btn{border:1px solid var(--line);background:var(--surface);padding:10px 16px;border-radius:9px;font-weight:600;min-height:42px}
+.btn:hover{background:var(--surface2)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn.sm{padding:6px 12px;min-height:34px;font-size:.88rem}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.chip{border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:999px;font-weight:500;font-size:.9rem}
+.chip:hover{background:var(--surface2)}
+.chip[aria-pressed="true"],.chip[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+
+/* stat tiles */
+.stat{display:flex;flex-direction:column;gap:6px}
+.stat .v{font-family:var(--f-mono);font-weight:700;font-size:2rem;line-height:1}
+.stat .v small{font-size:1rem;color:var(--muted);font-weight:500}
+.stat.pts .v{color:var(--amber)}
+
+/* bars */
+.bar{height:10px;background:var(--surface2);border-radius:5px;overflow:hidden;position:relative}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:5px;transition:width .5s ease}
+.bar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),var(--surface) calc(10% - 1px) 10%);opacity:.55}
+.bar.amber>i{background:var(--amber)}
+.bar.good>i{background:var(--good)}
+.barrow{display:grid;gap:6px}
+.barrow .top2{display:flex;justify-content:space-between;gap:8px;font-size:.92rem}
+.barrow .top2 b{font-weight:600}
+
+/* hex badges */
+.hex{width:56px;height:62px;flex:none;display:grid;place-items:center;font-family:var(--f-mono);font-weight:700;font-size:.78rem;background:var(--amber);color:#1b1200;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.hex.locked{background:var(--surface2);color:var(--muted)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:12px}
+.badge{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.badge.locked h3{color:var(--muted)}
+.badge p{font-size:.85rem;color:var(--muted)}
+.badge .got{font-family:var(--f-mono);font-size:.7rem;color:var(--good)}
+
+/* lists */
+.list{display:flex;flex-direction:column}
+.item{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.pill{font-family:var(--f-mono);font-weight:700;font-size:.85rem;padding:4px 9px;border-radius:6px;white-space:nowrap}
+.pill.good{background:var(--good-bg);color:var(--good)}
+.pill.mid{background:var(--amber-bg);color:var(--amber)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.empty{padding:22px;border:1px dashed var(--line);border-radius:12px;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:12px;align-items:center}
+
+/* chart */
+.chart{width:100%;height:auto;display:block}
+.chart text{font-family:var(--f-mono);font-size:10px;fill:var(--muted)}
+
+/* reviewer */
+.search{width:100%;padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+.topic{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.topic summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+.topic summary::-webkit-details-marker{display:none}
+.topic summary::after{content:"+";font-family:var(--f-mono);font-size:1.3rem;color:var(--muted);margin-left:8px}
+.topic[open] summary::after{content:"\2212"}
+.topic .body{padding:0 16px 16px;display:flex;flex-direction:column;gap:12px}
+.topic ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.terms{display:flex;gap:6px;flex-wrap:wrap}
+.term{font-family:var(--f-mono);font-size:.74rem;background:var(--accent-soft);color:var(--accent);padding:3px 8px;border-radius:5px}
+.done{font-family:var(--f-mono);font-size:.7rem;color:var(--good);white-space:nowrap}
+
+/* quiz */
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface)}
+.opt:hover:not([disabled]){border-color:var(--accent);background:var(--accent-soft)}
+.opt .k{font-family:var(--f-mono);font-weight:700;width:26px;height:26px;border-radius:6px;background:var(--surface2);display:grid;place-items:center;flex:none;font-size:.8rem}
+.opt.ok{border-color:var(--good);background:var(--good-bg)}
+.opt.ok .k{background:var(--good);color:var(--surface)}
+.opt.no{border-color:var(--bad);background:var(--bad-bg)}
+.opt.no .k{background:var(--bad);color:var(--surface)}
+.opt[disabled]{cursor:default}
+.opts{display:flex;flex-direction:column;gap:10px}
+.qtext{font-family:var(--f-display);font-size:1.25rem;line-height:1.3;text-wrap:balance}
+.fb{padding:14px 16px;border-radius:10px;border-left:5px solid}
+.fb.good{background:var(--good-bg);border-color:var(--good)}
+.fb.bad{background:var(--bad-bg);border-color:var(--bad)}
+.fb b{display:block;margin-bottom:4px}
+.score-big{font-family:var(--f-mono);font-weight:700;font-size:3.2rem;line-height:1}
+.scopegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px}
+.scope{text-align:left;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);display:flex;flex-direction:column;gap:2px}
+.scope:hover{border-color:var(--accent)}
+.scope[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.scope b{font-family:var(--f-display)}
+.scope span{font-size:.8rem;color:var(--muted)}
+details.att{border-top:1px solid var(--line)}
+details.att:first-child{border-top:0}
+details.att>summary{list-style:none;cursor:pointer;padding:12px 0;display:flex;gap:12px;align-items:center;justify-content:space-between}
+details.att>summary::-webkit-details-marker{display:none}
+.missed{padding:0 0 14px;display:flex;flex-direction:column;gap:10px}
+.missed div{background:var(--surface2);border-radius:8px;padding:10px 12px;font-size:.9rem}
+.sel{padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <button class="brand" data-go="dashboard" aria-label="Go to dashboard"><span class="logo" aria-hidden="true">NC2</span><span>CSS NC II Review Tracker</span></button>
+    <nav class="tabs" id="tabs" aria-label="Main"></nav>
+    <button class="iconbtn" id="themeBtn" aria-label="Toggle light or dark theme" title="Toggle theme">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>
+    </button>
+  </header>
+  <main id="view" tabindex="-1"></main>
+</div>
+<nav class="bottomnav" id="bnav" aria-label="Main"></nav>
+
+<script>
+/* ---------- DATA ---------- */
+const CATS=[
+{id:'prep',name:'Preparing the Server',code:'PRE',full:'1. Preparing the Server Computer',blurb:'Check the hardware, connect the peripherals and network, and verify the BIOS/UEFI settings.',
+ topics:[
+ {t:'Hardware and connections',pts:['Prepare the computer and check all hardware components.','Connect the monitor, keyboard, mouse, and power cable.','Connect the computer to the network using an Ethernet cable.','Turn on the computer.'],terms:['hardware check','Ethernet cable','peripherals']},
+ {t:'BIOS/UEFI settings',pts:['Enter the BIOS/UEFI settings.','Check the boot order and hardware configuration.','Save the settings and restart the computer.'],terms:['BIOS/UEFI','boot order','save and restart']}]},
+{id:'os',name:'Installing the Server OS',code:'OS',full:'2. Installing a Server Operating System',blurb:'Boot from a USB installer, run the setup wizard and sign in for the first time.',
+ topics:[
+ {t:'Booting from the installer USB',pts:['Prepare a bootable USB containing the server operating system.','Insert the USB into the server computer, then restart the computer.','Enter the BIOS/UEFI settings and set the USB as the first boot device.','Save the changes and restart.'],terms:['bootable USB','first boot device']},
+ {t:'Running the installation',pts:['Select the language and installation preferences, then click Install Now.','Choose the appropriate server operating system edition.','Select the installation type and choose the target drive or partition.','Wait for the installation to finish.','Set the administrator password and log in to the server.'],terms:['Install Now','edition','target partition','administrator password']}]},
+{id:'ip',name:'Configuring the IP Address',code:'IP',full:'3. Configuring the Server IP Address',blurb:'Set a static IPv4 address from the Control Panel and verify it with ipconfig.',
+ topics:[
+ {t:'Opening the adapter properties',pts:['Open the Control Panel and select Network and Sharing Center.','Click Change adapter settings.','Right-click Ethernet and select Properties.','Select Internet Protocol Version 4 (TCP/IPv4) and click Properties.'],terms:['Network and Sharing Center','adapter settings','TCP/IPv4']},
+ {t:'Entering and checking the address',pts:['Select Use the following IP address.','Enter the assigned IP address, subnet mask, and default gateway.','Enter the preferred DNS server and click OK to save the settings.','Open Command Prompt and type ipconfig to check the configuration.'],terms:['static IP','subnet mask','default gateway','DNS','ipconfig']}]},
+{id:'users',name:'Creating User Accounts',code:'USR',full:'4. Creating User Accounts',blurb:'Add users from Server Manager using Active Directory Users and Computers.',
+ topics:[
+ {t:'Finding the user tool',pts:['Open Server Manager, then open Tools.','Select Active Directory Users and Computers (if Active Directory is installed).','Select the appropriate domain or folder.'],terms:['Server Manager','Tools','Active Directory']},
+ {t:'Adding the new user',pts:['Right-click Users, then select New, then User.','Enter the user\'s first name and username.','Create a password and configure the password settings.','Click Finish.'],terms:['New > User','username','password settings']}]},
+{id:'share',name:'Setting Up File Sharing',code:'SHR',full:'5. Setting Up File Sharing',blurb:'Share a server folder, set permissions and open it from another computer.',
+ topics:[
+ {t:'Sharing a folder',pts:['Create a folder on the server.','Right-click the folder and select Properties.','Open the Sharing tab and click Advanced Sharing.','Check Share this folder and enter a share name.'],terms:['Properties','Sharing tab','Advanced Sharing','share name']},
+ {t:'Permissions and access',pts:['Click Permissions and assign the appropriate user permissions.','Click Apply and OK.','Access the shared folder from another computer using the server\'s network address.'],terms:['permissions','Apply','network address']}]},
+{id:'test',name:'Testing Connectivity',code:'NET',full:'6. Testing Network Connectivity',blurb:'Use ipconfig and ping from a client computer, and know what to check when there is no connection.',
+ topics:[
+ {t:'Setting up the test',pts:['Turn on the server and client computers.','Connect both computers to the same network.','Open Command Prompt on the client computer.','Type ipconfig and check the client\'s IP address.'],terms:['client computer','same network','ipconfig']},
+ {t:'Pinging the server',pts:['Type ping followed by the server\'s IP address, then press Enter.','Check if replies are received.','If there is no connection, check the Ethernet cable, IP address, and firewall settings.'],terms:['ping','replies','firewall']}]},
+{id:'maint',name:'Server Maintenance',code:'MNT',full:'7. Server Maintenance',blurb:'Routine physical and software checks that keep the server healthy.',
+ topics:[
+ {t:'Physical care',pts:['Check the physical condition of the server.','Clean dust from the computer components safely.','Check the cooling fans and ventilation.'],terms:['dust','cooling fans','ventilation']},
+ {t:'Software care and records',pts:['Check available disk space and install necessary security updates.','Scan for viruses and malware.','Check system logs for errors.','Back up important server files and restart the server if necessary.','Document all maintenance activities.'],terms:['disk space','security updates','malware scan','system logs','backup','documentation']}]}
+];
+const Q=[
+['prep','Which cable connects the server computer to the network?',['HDMI cable','Ethernet cable','VGA cable','USB cable'],1,'The server is connected to the network using an Ethernet cable.'],
+['prep','Which peripherals and cables are connected before turning on the server computer?',['Monitor, keyboard, mouse, and power cable','Printer and scanner only','Speakers and webcam','Only the power cable'],0,'The monitor, keyboard, mouse and power cable are connected so you can see and control the computer when it starts.'],
+['prep','Where do you check the boot order and hardware configuration?',['Command Prompt','Control Panel','BIOS/UEFI settings','Server Manager'],2,'Enter the BIOS/UEFI settings after turning on the computer to check the boot order and hardware configuration.'],
+['prep','What is the first step in preparing the server computer?',['Install the operating system','Prepare the computer and check all hardware components','Create user accounts','Share a folder'],1,'Begin by preparing the computer and checking that all hardware components are present and in good condition.'],
+['prep','What do you do after checking the BIOS/UEFI settings?',['Save the settings and restart the computer','Delete the settings','Unplug the Ethernet cable','Format the drive'],0,'Save the settings and restart the computer so the changes take effect.'],
+['prep','What is done right after connecting the Ethernet cable and the peripherals?',['Scan for malware','Turn on the computer','Assign user permissions','Type ping'],1,'Once everything is connected, turn on the computer and then enter the BIOS/UEFI settings.'],
+['os','What do you prepare to install the server operating system from a USB drive?',['A formatted floppy disk','A bootable USB containing the server operating system','A blank DVD only','A network cable'],1,'A bootable USB containing the server OS is used as the installation media.'],
+['os','After inserting the USB and restarting, what do you set in the BIOS/UEFI?',['The USB as the first boot device','The administrator password','The IP address','The share name'],0,'Setting the USB as the first boot device lets the computer start the installer instead of the existing disk.'],
+['os','Which button do you click after selecting the language and installation preferences?',['Finish','Install Now','Apply','Properties'],1,'Click Install Now to begin the setup.'],
+['os','What do you choose after selecting the installation type?',['The user name','The default gateway','The target drive or partition','The domain'],2,'You choose the target drive or partition where the server operating system will be installed.'],
+['os','What do you do right after "Click Install Now"?',['Log in to the server','Choose the appropriate server operating system edition','Set the administrator password','Save the BIOS settings'],1,'After Install Now, choose the appropriate server operating system edition, then select the installation type.'],
+['os','What are the last steps once the installation finishes?',['Set the administrator password, then log in to the server','Insert the USB again','Enter the BIOS/UEFI settings','Create a shared folder'],0,'After the installation finishes, set the administrator password and log in to the server.'],
+['ip','After opening the Control Panel, which item do you select to configure the network?',['Network and Sharing Center','Device Manager','Disk Management','Programs and Features'],0,'Control Panel, then Network and Sharing Center, then Change adapter settings.'],
+['ip','Which connection do you right-click to open its properties?',['Bluetooth','Ethernet','Wi-Fi hotspot','VPN'],1,'Right-click Ethernet and select Properties to reach the protocol settings.'],
+['ip','Which protocol do you select to set the server IP address?',['Internet Protocol Version 4 (TCP/IPv4)','File and Printer Sharing','Client for Microsoft Networks','Link-Layer Topology Discovery'],0,'Select Internet Protocol Version 4 (TCP/IPv4) and click Properties.'],
+['ip','Which option lets you type in a fixed IP address?',['Obtain an IP address automatically','Use the following IP address','Obtain DNS server address automatically','Disable this network device'],1,'Select Use the following IP address to enter a static address manually.'],
+['ip','Which three values are entered for the assigned address?',['Username, password and domain','IP address, subnet mask, and default gateway','MAC address, port and protocol','Share name, folder and permissions'],1,'Enter the assigned IP address, subnet mask and default gateway. The preferred DNS server is entered next.'],
+['ip','Which command do you type in Command Prompt to check the IP configuration?',['ping','ipconfig','format','shutdown'],1,'ipconfig displays the IP address, subnet mask and default gateway currently in use.'],
+['users','Which tool do you open first to create a user account?',['Server Manager','Notepad','Task Manager','Paint'],0,'Open Server Manager, then Tools, to reach the user management tools.'],
+['users','Which tool is used to create domain users when Active Directory is installed?',['Event Viewer','Disk Cleanup','Active Directory Users and Computers','Windows Defender'],2,'Active Directory Users and Computers manages domain users, groups and computers.'],
+['users','What do you right-click to add a new account?',['Computers','Users','Printers','Sites'],1,'Right-click Users, then select New, then User.'],
+['users','What information is entered when creating a new user?',['The first name and username','The server serial number','The BIOS version','The Ethernet cable length'],0,'Enter the user\'s first name and username (logon name).'],
+['users','What do you do after entering the user\'s name details?',['Click Finish at once','Create a password and configure the password settings','Restart the computer','Run ipconfig'],1,'Create a password and configure the password settings before clicking Finish.'],
+['users','Which button completes the user account creation?',['Apply','Install Now','Finish','Ping'],2,'Click Finish to create the account.'],
+['share','What is the first step in setting up file sharing?',['Create a folder on the server','Type ping','Open the BIOS','Install the OS'],0,'Create the folder on the server that will be shared.'],
+['share','After right-clicking the folder, what do you select?',['Delete','Properties','Rename','Restore'],1,'Select Properties, then open the Sharing tab.'],
+['share','Which button on the Sharing tab opens the share options?',['Advanced Sharing','Format','Troubleshoot','Defragment'],0,'Click Advanced Sharing, then check Share this folder and enter a share name.'],
+['share','Which button lets you assign who can access the shared folder?',['Cancel','Permissions','Browse','Restart'],1,'Click Permissions and assign the appropriate user permissions.'],
+['share','After assigning permissions, what do you click?',['Apply and OK','Install Now','Finish','Ping'],0,'Click Apply and OK to save the sharing settings.'],
+['share','How is the shared folder accessed from another computer?',['By pressing the power button','Using the server\'s network address','By inserting a USB drive','By running sfc /scannow'],1,'Open the shared folder from another computer using the server\'s network address.'],
+['test','Both the server and client computers must be connected to what before testing?',['Different networks','The same network','A printer','A projector'],1,'Both computers need to be on the same network for the test to work.'],
+['test','Where do you run the connectivity commands?',['Command Prompt on the client computer','The BIOS screen','Server Manager only','The Sharing tab'],0,'Open Command Prompt on the client computer to run ipconfig and ping.'],
+['test','Which command do you type to check the client\'s IP address?',['ping','ipconfig','shutdown','format'],1,'ipconfig shows the client\'s IP address so you can confirm it is on the same network as the server.'],
+['test','How do you test the connection to the server?',['Type ping followed by the server\'s IP address','Type ipconfig followed by the share name','Restart the client','Open Properties'],0,'Type ping followed by the server\'s IP address and press Enter.'],
+['test','What does it mean when replies are received from the ping?',['The firewall is deleted','The connection to the server works','The OS is not installed','The disk is full'],1,'Replies show that the client can reach the server.'],
+['test','If there is no connection, which three things should you check?',['Ethernet cable, IP address, and firewall settings','Mouse, keyboard and monitor','Disk space, malware and logs','User name, password and share name'],0,'Check the Ethernet cable, the IP address, and the firewall settings.'],
+['maint','Which task helps prevent overheating of the server?',['Creating user accounts','Cleaning dust and checking the cooling fans and ventilation','Changing the share name','Typing ping'],1,'Dust blocks airflow. Clean the components safely and check the fans and ventilation.'],
+['maint','Which task helps fix known security weaknesses?',['Install necessary security updates','Change the wallpaper','Restart the monitor','Rename the server folder'],0,'Security updates patch known vulnerabilities in the operating system and software.'],
+['maint','What should you do to find harmful software on the server?',['Defragment the cable','Scan for viruses and malware','Unplug the keyboard','Clear the share name'],1,'Scan for viruses and malware as part of regular maintenance.'],
+['maint','Which task protects the server\'s data from loss?',['Back up important server files','Clean the monitor','Change the boot order','Create a new user'],0,'Backing up important server files lets you restore data after a failure or deletion.'],
+['maint','Why do you check the system logs?',['To count the cables','To look for errors','To set the IP address','To create shares'],1,'System logs record errors and warnings that point to problems on the server.'],
+['maint','What should be done after the maintenance work is finished?',['Document all maintenance activities','Reinstall the OS','Delete the logs','Remove the Ethernet cable'],0,'Document all maintenance activities so there is a record of what was done and when.']
+].map((r,i)=>({id:'q'+i,c:r[0],q:r[1],o:r[2],a:r[3],e:r[4]}));
+const QBY=Object.fromEntries(Q.map(q=>[q.id,q]));
+const CBY=Object.fromEntries(CATS.map(c=>[c.id,c]));
+const TOPIC_TOTAL=CATS.reduce((n,c)=>n+c.topics.length,0);
+
+const BADGES=[
+ {id:'first',g:'PWR',n:'First Boot',d:'Complete your first quiz.',ok:s=>s.attempts.length>=1},
+ {id:'five',g:'x5',n:'Steady Builder',d:'Complete 5 quizzes.',ok:s=>s.attempts.length>=5},
+ {id:'ten',g:'x10',n:'Bench Regular',d:'Complete 10 quizzes.',ok:s=>s.attempts.length>=10},
+ {id:'perfect',g:'100',n:'Zero Faults',d:'Score 100% on a quiz of 5 or more questions.',ok:s=>s.attempts.some(a=>a.total>=5&&a.pct===100)},
+ {id:'streak',g:'5>',n:'Hot Streak',d:'Answer 5 questions correctly in a row.',ok:s=>s.bestStreak>=5},
+ {id:'pts',g:'500',n:'Power Up',d:'Earn 500 points.',ok:s=>s.points>=500},
+ {id:'explorer',g:'ALL',n:'Full Coverage',d:'Take a quiz in every section.',ok:s=>CATS.every(c=>s.attempts.some(a=>a.cat===c.id))},
+ {id:'reader',g:'RD',n:'Bookworm',d:'Mark 6 reviewer topics as reviewed.',ok:s=>Object.keys(s.reviewed).length>=6},
+ ...CATS.map(c=>({id:'m_'+c.id,g:c.code,n:c.name+' Master',d:'Score 80% or higher on a '+c.name+' quiz of 5+ questions.',ok:s=>s.attempts.some(a=>a.cat===c.id&&a.total>=5&&a.pct>=80)}))
+];
+const LEVELS=[[0,'Trainee'],[100,'Apprentice'],[250,'Technician'],[500,'Senior Technician'],[800,'Assessment Ready']];
+
+/* ---------- STORE ---------- */
+const KEY='cssnc2.tracker.v2';
+let mem=null;
+function fresh(){return{attempts:[],qstats:{},reviewed:{},points:0,badges:{},bestStreak:0}}
+function load(){
+  try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);return Object.assign(fresh(),o)}}catch(e){}
+  return mem||fresh();
+}
+let S=load();
+function save(){mem=S;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+/* ---------- HELPERS ---------- */
+const $=s=>document.querySelector(s);
+const pctCls=p=>p>=80?'good':p>=60?'mid':'bad';
+const fmtDate=ts=>{const d=new Date(ts);return d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})+' · '+d.toLocaleTimeString('en-PH',{hour:'numeric',minute:'2-digit'})};
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function level(){let i=0;LEVELS.forEach((l,k)=>{if(S.points>=l[0])i=k});const next=LEVELS[i+1];return{name:LEVELS[i][1],i,next,from:LEVELS[i][0],pct:next?Math.round((S.points-LEVELS[i][0])/(next[0]-LEVELS[i][0])*100):100}}
+function mastery(cid){const qs=Q.filter(q=>!cid||q.c===cid);const m=qs.filter(q=>S.qstats[q.id]&&S.qstats[q.id].ever).length;return{m,n:qs.length,pct:Math.round(m/qs.length*100)}}
+function catStats(cid){const a=S.attempts.filter(x=>x.cat===cid);return{n:a.length,best:a.length?Math.max(...a.map(x=>x.pct)):null,avg:a.length?Math.round(a.reduce((t,x)=>t+x.pct,0)/a.length):null}}
+function avgScore(){return S.attempts.length?Math.round(S.attempts.reduce((t,a)=>t+a.pct,0)/S.attempts.length):0}
+function bar(p,cls=''){return `<div class="bar ${cls}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}"><i style="width:${p}%"></i></div>`}
+function barRow(label,right,p,cls=''){return `<div class="barrow"><div class="top2"><b>${label}</b><span class="mono muted">${right}</span></div>${bar(p,cls)}</div>`}
+function weakest(){
+  const list=CATS.map(c=>({c,m:mastery(c.id).pct,s:catStats(c.id)}));
+  list.sort((a,b)=>(a.m-b.m)||((a.s.best??-1)-(b.s.best??-1)));
+  return list[0];
+}
+function hexBadge(b,got){return `<div class="badge ${got?'':'locked'}"><span class="hex ${got?'':'locked'}" aria-hidden="true">${b.g}</span><div><h3>${b.n}</h3><p>${b.d}</p>${got?`<span class="got">EARNED ${new Date(got).toLocaleDateString('en-PH',{month:'short',day:'numeric'})}</span>`:''}</div></div>`}
+
+/* ---------- NAV ---------- */
+const ICONS={
+ dashboard:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="9" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="5" rx="1.5"/><rect x="13.5" y="11" width="7.5" height="10" rx="1.5"/><rect x="3" y="15" width="7.5" height="6" rx="1.5"/></svg>',
+ review:'<svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 5.5v16M8.5 8h7"/></svg>',
+ quiz:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.2l2.8 2.8L16.2 9.5"/></svg>',
+ progress:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+ history:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>'
+};
+const VIEWS=[['dashboard','Home'],['review','Review'],['quiz','Quiz'],['progress','Progress'],['history','History']];
+function renderNav(cur){
+  $('#tabs').innerHTML=VIEWS.map(v=>`<button class="tab" data-go="${v[0]}" ${cur===v[0]?'aria-current="page"':''}>${ICONS[v[0]]}${v[1]==='Home'?'Dashboard':v[1]}</button>`).join('');
+  $('#bnav').innerHTML=VIEWS.map(v=>`<button class="bn" data-go="${v[0]}" ${cur===v[0]?'aria-current="page"':''}>${ICONS[v[0]]}<span>${v[1]}</span></button>`).join('');
+}
+function go(v){if(location.hash.slice(1)===v)route();else location.hash=v}
+
+/* ---------- VIEWS ---------- */
+function vDashboard(){
+  const L=level(),mo=mastery(),w=weakest(),recent=S.attempts.slice(-5).reverse();
+  const start=S.attempts.length?'Welcome back.':'Welcome.';
+  return `
+  <div class="pagehead"><span class="label">CSS NC II · COC 3: Setting Up Computer Servers</span><h1>${start} Ready to review?</h1>
+  <p>${S.attempts.length?`You are a <b>${L.name}</b>. ${L.next?`${L.next[0]-S.points} more points to reach ${L.next[1]}.`:'You reached the top level.'}`:'Take a quiz or read a reviewer topic to start tracking your progress. Everything you do is saved on this device.'}</p></div>
+  <div class="grid g4">
+    <div class="card stat"><span class="label">Quizzes completed</span><span class="v">${S.attempts.length}</span></div>
+    <div class="card stat"><span class="label">Average score</span><span class="v">${S.attempts.length?avgScore():'--'}<small>${S.attempts.length?'%':''}</small></span></div>
+    <div class="card stat"><span class="label">Learning progress</span><span class="v">${mo.pct}<small>%</small></span>${bar(mo.pct)}<span class="muted mono" style="font-size:.78rem">${mo.m}/${mo.n} questions mastered</span></div>
+    <div class="card stat pts"><span class="label">Points</span><span class="v">${S.points}</span>${bar(L.pct,'amber')}<span class="muted mono" style="font-size:.78rem">Level ${L.i+1}: ${L.name}</span></div>
+  </div>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="col">
+      <div class="card col"><div class="row between"><h2>Mastery by section</h2><button class="btn sm" data-go="progress">Details</button></div>
+        ${CATS.map(c=>{const m=mastery(c.id);return barRow(c.name,m.m+'/'+m.n,m.pct)}).join('')}
+      </div>
+      <div class="card col"><h2>Recent scores</h2>${chart()}</div>
+    </div>
+    <div class="col">
+      <div class="card col" style="border-color:var(--accent)"><span class="label">Suggested next step</span>
+        <h2>${w.c.full}</h2>
+        <p class="muted">${w.m===0&&!w.s.n?'You have not practiced this section yet.':`Mastery is ${w.m}% here, the lowest of your seven sections.`}</p>
+        <div class="row"><button class="btn pri" data-quiz="${w.c.id}">Practice quiz</button><button class="btn" data-review="${w.c.id}">Read reviewer</button></div></div>
+      <div class="card col"><div class="row between"><h2>Latest attempts</h2><button class="btn sm" data-go="history">All history</button></div>
+        ${recent.length?`<div class="list">${recent.map(a=>`<div class="item"><div><b>${CBY[a.cat]?CBY[a.cat].name:'Mixed Review'}</b><div class="muted mono" style="font-size:.78rem">${fmtDate(a.ts)}</div></div><span class="pill ${pctCls(a.pct)}">${a.correct}/${a.total} · ${a.pct}%</span></div>`).join('')}</div>`:
+        `<div class="empty"><span>No quizzes yet.</span><button class="btn pri" data-go="quiz">Take your first quiz</button></div>`}
+      </div>
+      <div class="card col"><div class="row between"><h2>Badges</h2><button class="btn sm" data-go="progress">View all</button></div>
+        <p class="muted">${Object.keys(S.badges).length} of ${BADGES.length} earned.</p>
+        <div class="row" style="gap:8px">${BADGES.slice(0,8).map(b=>`<span class="hex ${S.badges[b.id]?'':'locked'}" title="${b.n}" style="width:44px;height:49px;font-size:.62rem">${b.g}</span>`).join('')}</div></div>
+    </div>
+  </div>`;
+}
+function chart(){
+  const a=S.attempts.slice(-10);
+  if(!a.length)return `<div class="empty"><span>Your last 10 scores will appear here.</span></div>`;
+  const W=420,H=170,L=30,R=8,T=10,B=22,iw=W-L-R,ih=H-T-B,bw=Math.min(28,iw/a.length*.62),y=v=>T+ih-v/100*ih;
+  let g=[0,50,100].map(v=>`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+3}" text-anchor="end">${v}</text>`).join('');
+  g+=`<line x1="${L}" x2="${W-R}" y1="${y(80)}" y2="${y(80)}" stroke="var(--good)" stroke-dasharray="4 4"/><text x="${W-R}" y="${y(80)-4}" text-anchor="end" style="fill:var(--good)">80% target</text>`;
+  const bars=a.map((x,i)=>{const cx=L+iw/a.length*(i+.5);const col=x.pct>=80?'var(--good)':x.pct>=60?'var(--amber)':'var(--bad)';
+    return `<rect x="${cx-bw/2}" y="${y(x.pct)}" width="${bw}" height="${Math.max(2,ih-(y(x.pct)-T))}" rx="3" fill="${col}"><title>${x.pct}%</title></rect><text x="${cx}" y="${H-6}" text-anchor="middle">${i+1}</text>`}).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Bar chart of your last ${a.length} quiz scores">${g}${bars}</svg><p class="muted" style="font-size:.8rem">Oldest to newest. Green is 80% or higher, amber 60 to 79, red below 60.</p>`;
+}
+
+let rvCat='prep',rvQuery='';
+function vReview(){
+  return `<div class="pagehead"><span class="label">Reviewer</span><h1>CSS NC II reviewer</h1><p>Study by section, mark topics as reviewed, then test yourself with a quiz.</p></div>
+  <div class="col">
+    <input class="search" id="rvSearch" type="search" placeholder="Search a term, e.g. ipconfig, ping, BIOS" value="${rvQuery.replace(/"/g,'&quot;')}" aria-label="Search reviewer">
+    <div class="chips" id="rvTabs" role="tablist"></div>
+    <div id="rvList" class="col"></div>
+  </div>`;
+}
+function renderReview(){
+  const q=rvQuery.trim().toLowerCase();
+  $('#rvTabs').innerHTML=q?'':CATS.map(c=>{const n=c.topics.filter((t,i)=>S.reviewed[c.id+i]).length;return `<button class="chip" role="tab" data-rvcat="${c.id}" aria-selected="${rvCat===c.id}">${c.name} <span class="mono" style="opacity:.75">${n}/${c.topics.length}</span></button>`}).join('');
+  const open=new Set([...document.querySelectorAll('#rvList details[open]')].map(d=>d.dataset.k));
+  let out='';
+  const topic=(c,t,i)=>{const k=c.id+i,done=S.reviewed[k];return `<details class="topic" data-k="${k}" ${open.has(k)||q?'open':''}><summary><div><h3>${t.t}</h3>${q?`<span class="label">${c.name}</span>`:''}</div>${done?'<span class="done">REVIEWED</span>':''}</summary>
+    <div class="body"><ul>${t.pts.map(p=>`<li>${p}</li>`).join('')}</ul><div class="terms">${t.terms.map(x=>`<span class="term">${x}</span>`).join('')}</div>
+    <div class="row"><button class="btn sm ${done?'':'pri'}" data-mark="${k}">${done?'Unmark as reviewed':'Mark as reviewed'}</button></div></div></details>`};
+  if(q){
+    const hits=[];CATS.forEach(c=>c.topics.forEach((t,i)=>{if((t.t+' '+t.pts.join(' ')+' '+t.terms.join(' ')).toLowerCase().includes(q))hits.push(topic(c,t,i))}));
+    out=hits.length?hits.join(''):`<div class="empty"><span>No topics match "${rvQuery.replace(/[<>&]/g,'')}". Try a shorter term.</span></div>`;
+  }else{
+    const c=CBY[rvCat];
+    out=`<div class="card"><h2>${c.full}</h2><p class="muted">${c.blurb}</p></div>`+c.topics.map((t,i)=>topic(c,t,i)).join('')+
+      `<div class="row"><button class="btn pri" data-quiz="${c.id}">Take the ${c.name} quiz</button></div>`;
+  }
+  $('#rvList').innerHTML=out;
+}
+
+/* ---------- QUIZ ---------- */
+let QZ=null,setup={scope:'mixed',len:10};
+function poolFor(scope){return scope==='mixed'?Q:Q.filter(q=>q.c===scope)}
+function lenOpts(pool){const o=[5,10].filter(n=>n<pool);o.push(pool);return[...new Set(o)]}
+function startQuiz(scope,len){
+  const pool=poolFor(scope);len=Math.min(len,pool.length);
+  const qs=shuffle(pool).slice(0,len).map(q=>({q,opts:shuffle(q.o.map((t,i)=>({t,ok:i===q.a})))}));
+  QZ={scope,qs,i:0,sel:null,correct:0,streak:0,max:0,log:[],done:false,res:null};
+  go('quiz');
+}
+function vQuiz(){
+  if(!QZ){
+    const pool=poolFor(setup.scope),lo=lenOpts(pool.length);if(!lo.includes(setup.len))setup.len=lo[lo.length-1];
+    return `<div class="pagehead"><span class="label">Quiz</span><h1>Test yourself</h1><p>Pick a section or a mixed set. You get instant feedback after every answer and points for each correct one.</p></div>
+    <div class="col">
+      <div class="card col"><h2>1. Choose a scope</h2><div class="scopegrid">
+        <button class="scope" data-scope="mixed" aria-pressed="${setup.scope==='mixed'}"><b>Mixed review</b><span>${Q.length} questions from all sections</span></button>
+        ${CATS.map(c=>{const s=catStats(c.id);return `<button class="scope" data-scope="${c.id}" aria-pressed="${setup.scope===c.id}"><b>${c.name}</b><span>${Q.filter(q=>q.c===c.id).length} questions · ${s.best===null?'not taken':'best '+s.best+'%'}</span></button>`}).join('')}
+      </div></div>
+      <div class="card col"><h2>2. Number of questions</h2><div class="chips">${lo.map(n=>`<button class="chip" data-len="${n}" aria-pressed="${setup.len===n}">${n===pool.length?'All '+n:n}</button>`).join('')}</div></div>
+      <div class="row"><button class="btn pri" id="startQ">Start quiz</button><span class="muted">Scoring: 10 points per correct answer, +10 for finishing, +20 for a perfect score.</span></div>
+    </div>`;
+  }
+  if(QZ.done)return vResults();
+  const cur=QZ.qs[QZ.i],n=QZ.qs.length,ans=QZ.sel!==null,ok=ans&&cur.opts[QZ.sel].ok;
+  const name=QZ.scope==='mixed'?'Mixed review':CBY[QZ.scope].name;
+  return `<div class="col" style="padding-top:8px">
+    <div class="row between"><span class="label">${name} · Question ${QZ.i+1} of ${n}</span><span class="mono muted">Score ${QZ.correct}/${QZ.i+(ans?1:0)}</span></div>
+    ${bar(Math.round((QZ.i+(ans?1:0))/n*100))}
+    <div class="card col" style="gap:18px">
+      <p class="qtext">${cur.q.q}</p>
+      <div class="opts" role="group" aria-label="Answer choices">${cur.opts.map((o,i)=>{let c='';if(ans){if(o.ok)c='ok';else if(i===QZ.sel)c='no'}
+        return `<button class="opt ${c}" data-opt="${i}" ${ans?'disabled':''}><span class="k">${'ABCD'[i]}</span><span>${o.t}</span></button>`}).join('')}</div>
+      ${ans?`<div class="fb ${ok?'good':'bad'}" role="status"><b>${ok?'Correct!':'Not quite.'} ${ok?'':'The answer is '+cur.opts.find(o=>o.ok).t+'.'}</b>${cur.q.e}</div>
+      <div class="row between"><button class="btn sm" id="quitQ">Quit quiz</button><button class="btn pri" id="nextQ">${QZ.i+1===n?'See results':'Next question'}</button></div>`:
+      `<div class="row between"><button class="btn sm" id="quitQ">Quit quiz</button><span class="muted" style="font-size:.85rem">Tip: press A to D to answer</span></div>`}
+    </div></div>`;
+}
+function pickAnswer(i){
+  if(!QZ||QZ.done||QZ.sel!==null)return;
+  const cur=QZ.qs[QZ.i],ok=cur.opts[i].ok;
+  QZ.sel=i;QZ.log.push({id:cur.q.id,ok,picked:cur.opts[i].t});
+  if(ok){QZ.correct++;QZ.streak++;QZ.max=Math.max(QZ.max,QZ.streak)}else QZ.streak=0;
+  route();
+}
+function nextQ(){
+  if(QZ.i+1<QZ.qs.length){QZ.i++;QZ.sel=null;route();window.scrollTo(0,0)}else finishQuiz();
+}
+function finishQuiz(){
+  const total=QZ.qs.length,pct=Math.round(QZ.correct/total*100);
+  const pts=QZ.correct*10+10+(pct===100&&total>=5?20:0);
+  const before=new Set(Object.keys(S.badges));
+  QZ.log.forEach(l=>{const st=S.qstats[l.id]||(S.qstats[l.id]={seen:0,right:0,ever:false});st.seen++;if(l.ok){st.right++;st.ever=true}});
+  S.attempts.push({id:Date.now(),ts:Date.now(),cat:QZ.scope,total,correct:QZ.correct,pct,points:pts,missed:QZ.log.filter(l=>!l.ok).map(l=>({id:l.id,picked:l.picked}))});
+  S.points+=pts;S.bestStreak=Math.max(S.bestStreak,QZ.max);
+  const fresh=[];BADGES.forEach(b=>{if(!S.badges[b.id]&&b.ok(S)){S.badges[b.id]=Date.now();fresh.push(b)}});
+  save();
+  QZ.done=true;QZ.res={pct,pts,fresh,total,bonus:pct===100&&total>=5};
+  route();window.scrollTo(0,0);
+}
+function vResults(){
+  const r=QZ.res,msg=r.pct>=80?'Strong result. You are on track.':r.pct>=60?'Good effort. Review the missed items and try again.':'Keep going. Read the reviewer topics and retake the quiz.';
+  const missed=QZ.log.map((l,i)=>({l,q:QZ.qs[i].q})).filter(x=>!x.l.ok);
+  return `<div class="pagehead"><span class="label">Quiz complete</span><h1>${msg}</h1></div>
+  <div class="grid g2">
+    <div class="card col"><div class="row" style="gap:20px"><span class="score-big" style="color:var(--${pctCls(r.pct)==='mid'?'amber':pctCls(r.pct)})">${r.pct}%</span><div><b class="mono">${QZ.correct} / ${r.total} correct</b><div class="muted">${QZ.scope==='mixed'?'Mixed review':CBY[QZ.scope].name}</div></div></div>
+      ${bar(r.pct,pctCls(r.pct))}
+      <div class="list"><div class="item"><span>Correct answers</span><b class="mono">+${QZ.correct*10}</b></div><div class="item"><span>Quiz completed</span><b class="mono">+10</b></div>${r.bonus?'<div class="item"><span>Perfect score bonus</span><b class="mono">+20</b></div>':''}<div class="item"><b>Points earned</b><b class="mono" style="color:var(--amber)">+${r.pts}</b></div></div>
+      <div class="row"><button class="btn pri" id="again">Retake</button><button class="btn" id="newQ">New quiz</button><button class="btn" data-go="dashboard">Dashboard</button></div></div>
+    <div class="col">
+      ${r.fresh.length?`<div class="card col" style="border-color:var(--amber)"><h2>New badge${r.fresh.length>1?'s':''} unlocked</h2><div class="badges">${r.fresh.map(b=>hexBadge(b,Date.now())).join('')}</div></div>`:''}
+      <div class="card col"><h2>${missed.length?'Questions to review':'No missed questions'}</h2>
+      ${missed.length?missed.map(x=>`<div class="missed" style="padding:0"><div><b>${x.q.q}</b><br><span style="color:var(--bad)">Your answer: ${x.l.picked}</span><br><span style="color:var(--good)">Correct: ${x.q.o[x.q.a]}</span><br><span class="muted">${x.q.e}</span></div></div>`).join(''):'<p class="muted">Every answer was correct. Try a different section next.</p>'}</div>
+    </div></div>`;
+}
+
+/* ---------- PROGRESS ---------- */
+let confirmReset=false;
+function vProgress(){
+  const L=level(),mo=mastery(),rv=Object.keys(S.reviewed).length;
+  return `<div class="pagehead"><span class="label">Progress tracker</span><h1>Your progress</h1><p>Mastery counts a question once you have answered it correctly at least once.</p></div>
+  <div class="grid g2">
+    <div class="card col"><span class="label">Overall mastery</span><div class="row" style="gap:16px"><span class="score-big">${mo.pct}%</span><span class="muted mono">${mo.m} of ${mo.n} questions</span></div>${bar(mo.pct)}
+      ${barRow('Reviewer topics read',rv+'/'+TOPIC_TOTAL,Math.round(rv/TOPIC_TOTAL*100),'good')}</div>
+    <div class="card col"><span class="label">Level</span><div class="row" style="gap:16px"><span class="score-big" style="color:var(--amber)">${S.points}</span><div><b>${L.name}</b><div class="muted mono" style="font-size:.8rem">${L.next?`${L.next[0]-S.points} pts to ${L.next[1]}`:'Top level reached'}</div></div></div>${bar(L.pct,'amber')}
+      <div class="mono muted" style="font-size:.75rem">${LEVELS.map(l=>l[0]+' '+l[1]).join(' · ')}</div></div>
+  </div>
+  <h2 style="margin:24px 0 12px">By section</h2>
+  <div class="grid g2">${CATS.map(c=>{const m=mastery(c.id),s=catStats(c.id),r=c.topics.filter((t,i)=>S.reviewed[c.id+i]).length;
+    return `<div class="card col"><div class="row between"><h3>${c.full}</h3><span class="pill ${s.best===null?'':pctCls(s.best)}" style="${s.best===null?'background:var(--surface2);color:var(--muted)':''}">${s.best===null?'No quiz':'Best '+s.best+'%'}</span></div>
+    ${barRow('Mastery',m.m+'/'+m.n+' questions',m.pct)}${barRow('Topics reviewed',r+'/'+c.topics.length,Math.round(r/c.topics.length*100),'good')}
+    <div class="muted mono" style="font-size:.78rem">${s.n} quiz${s.n===1?'':'zes'} taken${s.avg!==null?' · average '+s.avg+'%':''}</div>
+    <div class="row"><button class="btn sm" data-review="${c.id}">Review</button><button class="btn sm pri" data-quiz="${c.id}">Quiz</button></div></div>`}).join('')}</div>
+  <div class="row between" style="margin:24px 0 12px"><h2>Achievements</h2><span class="mono muted">${Object.keys(S.badges).length}/${BADGES.length}</span></div>
+  <div class="badges">${BADGES.map(b=>hexBadge(b,S.badges[b.id])).join('')}</div>
+  <div class="card col" style="margin-top:24px"><h2>Reset data</h2><p class="muted">Clears all quiz attempts, points, badges and reviewed topics from this device.</p>
+    <div class="row">${confirmReset?`<button class="btn danger" id="doReset">Yes, erase everything</button><button class="btn" id="noReset">Cancel</button>`:`<button class="btn danger" id="askReset">Reset all progress</button>`}</div></div>`;
+}
+
+/* ---------- HISTORY ---------- */
+let hf='all';
+function vHistory(){
+  const list=S.attempts.slice().reverse().filter(a=>hf==='all'||a.cat===hf);
+  const total=S.attempts.length;
+  return `<div class="pagehead"><span class="label">History</span><h1>Quiz history</h1><p>Open an attempt to see the questions you missed.</p></div>
+  <div class="col"><div class="row between"><label class="row" style="gap:8px"><span class="label">Filter</span><select class="sel" id="hf" aria-label="Filter by section"><option value="all">All quizzes (${total})</option><option value="mixed" ${hf==='mixed'?'selected':''}>Mixed review</option>${CATS.map(c=>`<option value="${c.id}" ${hf===c.id?'selected':''}>${c.name}</option>`).join('')}</select></label>
+    <span class="mono muted">${list.length} shown${list.length?` · average ${Math.round(list.reduce((t,a)=>t+a.pct,0)/list.length)}%`:''}</span></div>
+  <div class="card">${list.length?list.map(a=>`<details class="att"><summary><div><b>${CBY[a.cat]?CBY[a.cat].name:'Mixed Review'}</b><div class="muted mono" style="font-size:.78rem">${fmtDate(a.ts)} · +${a.points} pts</div></div><span class="pill ${pctCls(a.pct)}">${a.correct}/${a.total} · ${a.pct}%</span></summary>
+    <div class="missed">${a.missed.length?a.missed.map(m=>{const q=QBY[m.id];return q?`<div><b>${q.q}</b><br><span style="color:var(--bad)">Your answer: ${m.picked}</span><br><span style="color:var(--good)">Correct: ${q.o[q.a]}</span><br><span class="muted">${q.e}</span></div>`:''}).join(''):'<div>No missed questions in this attempt.</div>'}</div></details>`).join(''):
+    `<div class="empty"><span>${total?'No attempts for this filter.':'No quiz attempts yet.'}</span><button class="btn pri" data-go="quiz">Start a quiz</button></div>`}</div></div>`;
+}
+
+/* ---------- ROUTER ---------- */
+function route(){
+  let v=location.hash.slice(1);if(!VIEWS.some(x=>x[0]===v))v='dashboard';
+  renderNav(v);
+  const el=$('#view');
+  el.innerHTML={dashboard:vDashboard,review:vReview,quiz:vQuiz,progress:vProgress,history:vHistory}[v]();
+  if(v==='review')renderReview();
+}
+window.addEventListener('hashchange',()=>{route();window.scrollTo(0,0)});
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  const d=t.dataset;
+  if(d.go){go(d.go);return}
+  if(d.quiz){QZ=null;setup.scope=d.quiz;setup.len=10;go('quiz');if(location.hash==='#quiz')route();return}
+  if(d.review){rvCat=d.review;rvQuery='';go('review');return}
+  if(d.rvcat){rvCat=d.rvcat;renderReview();return}
+  if(d.mark){if(S.reviewed[d.mark])delete S.reviewed[d.mark];else S.reviewed[d.mark]=1;
+    BADGES.forEach(b=>{if(!S.badges[b.id]&&b.ok(S))S.badges[b.id]=Date.now()});save();renderReview();return}
+  if(d.scope){setup.scope=d.scope;route();return}
+  if(d.len){setup.len=+d.len;route();return}
+  if(d.opt!==undefined){pickAnswer(+d.opt);return}
+  switch(t.id){
+    case 'startQ':startQuiz(setup.scope,setup.len);break;
+    case 'nextQ':nextQ();break;
+    case 'quitQ':QZ=null;route();break;
+    case 'again':startQuiz(QZ.scope,QZ.qs.length);break;
+    case 'newQ':QZ=null;route();break;
+    case 'askReset':confirmReset=true;route();break;
+    case 'noReset':confirmReset=false;route();break;
+    case 'doReset':S=fresh();save();confirmReset=false;QZ=null;route();break;
+    case 'themeBtn':toggleTheme();break;
+  }
+});
+document.addEventListener('input',e=>{if(e.target.id==='rvSearch'){rvQuery=e.target.value;renderReview()}});
+document.addEventListener('change',e=>{if(e.target.id==='hf'){hf=e.target.value;route()}});
+document.addEventListener('keydown',e=>{
+  if(location.hash!=='#quiz'||!QZ||QZ.done||e.target.matches('input,select,textarea')||e.ctrlKey||e.metaKey)return;
+  const k=e.key.toUpperCase(),i='ABCD'.indexOf(k);
+  if(i>=0&&k.length===1&&QZ.sel===null){pickAnswer(i);return}
+  if(e.key==='Enter'&&QZ.sel!==null&&!e.target.closest('button')){nextQ()}
+});
+
+/* theme */
+function toggleTheme(){
+  const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme=dark?'light':'dark';try{localStorage.setItem('cssnc2.theme',r.dataset.theme)}catch(e){}
+}
+try{const t=localStorage.getItem('cssnc2.theme');if(t)document.documentElement.dataset.theme=t}catch(e){}
+route();
+</script>
+
+</body></html>
